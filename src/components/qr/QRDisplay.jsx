@@ -4,7 +4,7 @@ import { Card, Button } from '../common';
 import { formatCurrency } from '../../utils/helpers';
 
 export const QRDisplay = ({ value, label, onFullscreen, vipBalance = 15000 }) => {
-  const [showBalance, setShowBalance] = useState(false);
+  const [showBalance, setShowBalance] = useState(true);
 
   const toggleBalance = () => {
     setShowBalance(!showBalance);
@@ -28,8 +28,8 @@ export const QRDisplay = ({ value, label, onFullscreen, vipBalance = 15000 }) =>
       <div className="mb-4 text-center w-full">
         <p className="text-sm text-gray-500 mb-2">Elkölthető VIP keret</p>
         <div className="flex items-center justify-center gap-3">
-          <p className="text-2xl font-bold tabular-nums text-primary">
-            {showBalance ? formatCurrency(vipBalance) : '★★★★★'}
+          <p className="text-2xl font-bold tabular-nums text-secondary">
+            {showBalance ? formatCurrency(vipBalance) : '* * * * * * *'}
           </p>
           <button
             onClick={toggleBalance}
