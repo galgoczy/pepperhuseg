@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePoints } from '../../hooks/usePoints';
@@ -15,6 +15,9 @@ export const Home = () => {
   const { user } = useAuth();
   const { points, coffeeCount, loading: pointsLoading, refresh: refreshPoints } = usePoints();
   const { transactions, loading: transactionsLoading, refresh: refreshTransactions } = useTransactions();
+
+  // Generate random VIP balance between 10,000 and 20,000 HUF (stays consistent per session)
+  const vipBalance = useMemo(() => Math.floor(Math.random() * 10000) + 10000, []);
 
   const handleSimulatePurchase = async () => {
     const amount = Math.floor(Math.random() * 4500) + 500;
@@ -86,6 +89,7 @@ export const Home = () => {
             value={user?.qrCode || '12345678'}
             label="Mutasd meg a pénztárnál!"
             onFullscreen={() => setShowQRFullscreen(true)}
+            vipBalance={vipBalance}
           />
 
           {/* Points Card */}
