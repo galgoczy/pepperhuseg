@@ -148,9 +148,9 @@ export const initializeMockData = () => {
   const mockPromotions = [
     {
       id: generateId(),
-      title: 'Dupla pontok hétvégén!',
-      description: 'Minden szombaton és vasárnap dupla pontokat kapsz minden vásárlás után.',
-      details: 'A promóció minden Pepperhouse étteremben érvényes.\n\nNem vonható össze más kedvezményekkel.',
+      title: 'Hétfői hétindító',
+      description: 'Minden hétfőn dupla pontokat kapsz minden vásárlás után!',
+      details: 'A promóció minden Pepperhouse étteremben érvényes hétfőnként.\n\nIndítsd jól a hetet, gyűjts dupla pontokat!\n\nNem vonható össze más kedvezményekkel.',
       validUntil: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
       isPersonal: false,
       image: null,

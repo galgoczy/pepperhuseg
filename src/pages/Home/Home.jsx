@@ -49,21 +49,33 @@ export const Home = () => {
     <>
       <div className="min-h-screen bg-light-gray pb-20">
         {/* Header */}
-        <div className="bg-white px-4 py-6 safe-top">
-          <div className="flex items-center justify-between max-w-md mx-auto">
-            <div>
-              <h1 className="text-2xl font-bold text-secondary">
-                Szia, {user?.name?.split(' ')[0] || 'Vendég'}! 👋
-              </h1>
-              <p className="text-sm text-gray-500">Jó étvágyat kívánunk!</p>
+        <div className="bg-white px-4 py-4 safe-top border-b border-gray-100">
+          <div className="max-w-md mx-auto">
+            {/* Logo */}
+            <div className="flex justify-center mb-3">
+              <img
+                src="https://pepperhouse.hu/wp-content/uploads/2022/03/cropped-pepper_logo2.png"
+                alt="Pepperhouse"
+                className="h-8 object-contain"
+              />
             </div>
 
-            <button
-              onClick={() => navigate('/profile')}
-              className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg"
-            >
-              {user?.name?.charAt(0) || 'U'}
-            </button>
+            {/* User greeting */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-secondary">
+                  Szia, {user?.name?.split(' ')[0] || 'Vendég'}! 👋
+                </h1>
+                <p className="text-sm text-gray-500">Jó étvágyat kívánunk!</p>
+              </div>
+
+              <button
+                onClick={() => navigate('/profile')}
+                className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg"
+              >
+                {user?.name?.charAt(0) || 'U'}
+              </button>
+            </div>
           </div>
         </div>
 
