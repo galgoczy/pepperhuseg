@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { CartProvider } from './contexts/CartContext';
 import { initializeMockData } from './services/mockData';
 import { isMobile } from './utils/helpers';
 
@@ -13,7 +14,7 @@ import { Promotions } from './pages/Promotions/Promotions';
 import { Feedback } from './pages/Feedback/Feedback';
 import { Profile } from './pages/Profile/Profile';
 import { Menu } from './pages/Menu/Menu';
-import { LoadingSpinner } from './components/common';
+import { LoadingSpinner, CartDrawer } from './components/common';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -127,9 +128,12 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <div className="min-h-screen bg-white">
-          <AppRoutes />
-        </div>
+        <CartProvider>
+          <div className="min-h-screen bg-white">
+            <AppRoutes />
+            <CartDrawer />
+          </div>
+        </CartProvider>
       </AuthProvider>
     </BrowserRouter>
   );

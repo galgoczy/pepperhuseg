@@ -5,3 +5,4 @@ export { Modal } from './Modal';
 export { LoadingSpinner } from './LoadingSpinner';
 export { ProgressBar } from './ProgressBar';
 export { Badge } from './Badge';
+export { CartDrawer } from './CartDrawer';

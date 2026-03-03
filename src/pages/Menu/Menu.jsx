@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { BottomNav, Header } from '../../components/navigation';
+import { useCart } from '../../contexts/CartContext';
 import { formatCurrency } from '../../utils/helpers';
 
 const today = new Date().toLocaleDateString('hu-HU', {
@@ -10,41 +12,48 @@ const today = new Date().toLocaleDateString('hu-HU', {
 
 const DAILY_MENU = {
   soup: {
+    id: 'soup-1',
     name: 'Paradicsomleves pirítóssal',
     allergens: 'Glutén, tej',
     price: 900,
   },
   menuA: {
+    id: 'menu-a',
     label: 'A menü',
+    name: 'A menü: Töltött paprika',
     starter: 'Paradicsomleves',
     main: 'Töltött paprika rizzsel',
     dessert: 'Túrógombóc',
     price: 1800,
   },
   menuB: {
+    id: 'menu-b',
     label: 'B menü',
+    name: 'B menü: Sertésszelet lecsóval',
     starter: 'Paradicsomleves',
     main: 'Sertésszelet lecsóval, hasábburgonyával',
     dessert: 'Almáspite',
     price: 2100,
   },
   menuFitt: {
+    id: 'menu-fitt',
     label: 'Fitt menü',
+    name: 'Fitt menü: Grillezett csirkemell',
     starter: 'Paradicsomleves',
     main: 'Grillezett csirkemell párolt zöldséggel, bulgurral',
     dessert: null,
     price: 2500,
   },
   mains: [
-    { name: 'Wiener Schnitzel hasábburgonyával', price: 2600, tags: ['Népszerű'] },
-    { name: 'Csirkepaprikás nokedlivel', price: 2400, tags: [] },
-    { name: 'Pörkölt galuska körettel', price: 2200, tags: ['Házi'] },
-    { name: 'Rácsos pisztráng petrezselymes burgonyával', price: 2900, tags: ['Séf ajánlata'] },
+    { id: 'main-1', name: 'Wiener Schnitzel hasábburgonyával', price: 2600, tags: ['Népszerű'] },
+    { id: 'main-2', name: 'Csirkepaprikás nokedlivel', price: 2400, tags: [] },
+    { id: 'main-3', name: 'Pörkölt galuska körettel', price: 2200, tags: ['Házi'] },
+    { id: 'main-4', name: 'Rácsos pisztráng petrezselymes burgonyával', price: 2900, tags: ['Séf ajánlata'] },
   ],
   desserts: [
-    { name: 'Somlói galuska tejszínhabbal', price: 650 },
-    { name: 'Rétes (alma / meggyes)', price: 500 },
-    { name: 'Panna cotta gyümölcsöntettel', price: 700 },
+    { id: 'dessert-1', name: 'Somlói galuska tejszínhabbal', price: 650 },
+    { id: 'dessert-2', name: 'Rétes (alma / meggyes)', price: 500 },
+    { id: 'dessert-3', name: 'Panna cotta gyümölcsöntettel', price: 700 },
   ],
 };
 
@@ -67,10 +76,43 @@ const Tag = ({ children }) => {
   );
 };
 
-const MenuRow = ({ name, price, tags = [], sub }) => (
-  <div className="flex items-start justify-between py-3 border-b border-gray-100 last:border-0 gap-2">
+const AddToCartButton = ({ item }) => {
+  const { addItem } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    setIsAdding(true);
+    addItem(item);
+
+    // Reset animation after delay
+    setTimeout(() => {
+      setIsAdding(false);
+    }, 600);
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className={`relative w-8 h-8 rounded-full bg-primary hover:bg-red-600 flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 ${
+        isAdding ? 'animate-cart-bounce' : ''
+      }`}
+      title="Kosárba"
+    >
+      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+      </svg>
+      {isAdding && (
+        <span className="absolute -top-1 -right-1 text-xs animate-fade-out">✓</span>
+      )}
+    </button>
+  );
+};
+
+const MenuRow = ({ item, tags = [], sub }) => (
+  <div className="flex items-start justify-between py-3 border-b border-gray-100 last:border-0 gap-2 hover:bg-gray-50 -mx-4 px-4 transition-all duration-200 rounded-lg group">
     <div className="flex-1">
-      <p className="font-medium text-secondary text-sm leading-snug">{name}</p>
+      <p className="font-medium text-secondary text-sm leading-snug group-hover:text-primary transition-colors duration-200">{item.name || item}</p>
       {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
       {tags.length > 0 && (
         <div className="flex gap-1 mt-1">
@@ -78,11 +120,47 @@ const MenuRow = ({ name, price, tags = [], sub }) => (
         </div>
       )}
     </div>
-    <span className="font-bold text-secondary tabular-nums whitespace-nowrap text-sm">
-      {formatCurrency(price)}
-    </span>
+    <div className="flex items-center gap-3">
+      <span className="font-bold text-secondary tabular-nums whitespace-nowrap text-sm">
+        {formatCurrency(item.price)}
+      </span>
+      <AddToCartButton item={{ id: item.id, name: item.name || item, price: item.price }} />
+    </div>
   </div>
 );
+
+const MenuCard = ({ menu, onAddToCart }) => {
+  return (
+    <div className="bg-white rounded-card shadow-card px-4 py-3 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+      <div className="flex items-center justify-between mb-2">
+        <span className="font-bold text-secondary">{menu.label}</span>
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-primary tabular-nums">{formatCurrency(menu.price)}</span>
+          <AddToCartButton item={{ id: menu.id, name: menu.name, price: menu.price }} />
+        </div>
+      </div>
+      <ul className="space-y-1 text-sm text-gray-600">
+        <li className="flex items-start gap-2">
+          <span className="text-gray-300 mt-0.5">›</span>
+          <span>{menu.starter}</span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="text-gray-300 mt-0.5">›</span>
+          <span>{menu.main}</span>
+        </li>
+        {menu.dessert && (
+          <li className="flex items-start gap-2">
+            <span className="text-gray-300 mt-0.5">›</span>
+            <span>{menu.dessert}</span>
+          </li>
+        )}
+      </ul>
+      {menu.label === 'Fitt menü' && (
+        <p className="mt-2 text-xs text-green-600 font-medium">🥗 Desszert nélkül</p>
+      )}
+    </div>
+  );
+};
 
 export const Menu = () => {
   return (
@@ -95,7 +173,7 @@ export const Menu = () => {
           <img
             src="https://images.unsplash.com/photo-1567521464027-f127ff144326?w=800&q=80&fit=crop"
             alt="Budai Knorr étterem"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
             onError={(e) => { e.target.style.display = 'none'; }}
           />
           {/* Gradient overlay */}
@@ -134,7 +212,7 @@ export const Menu = () => {
           <div>
             <SectionTitle>Leves</SectionTitle>
             <div className="bg-white rounded-card shadow-card px-4">
-              <MenuRow name={DAILY_MENU.soup.name} price={DAILY_MENU.soup.price} sub={`Allergének: ${DAILY_MENU.soup.allergens}`} />
+              <MenuRow item={DAILY_MENU.soup} sub={`Allergének: ${DAILY_MENU.soup.allergens}`} />
             </div>
           </div>
 
@@ -142,33 +220,9 @@ export const Menu = () => {
           <div>
             <SectionTitle>Napi menük</SectionTitle>
             <div className="space-y-3">
-              {[DAILY_MENU.menuA, DAILY_MENU.menuB, DAILY_MENU.menuFitt].map((m) => (
-                <div key={m.label} className="bg-white rounded-card shadow-card px-4 py-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-secondary">{m.label}</span>
-                    <span className="font-bold text-primary tabular-nums">{formatCurrency(m.price)}</span>
-                  </div>
-                  <ul className="space-y-1 text-sm text-gray-600">
-                    <li className="flex items-start gap-2">
-                      <span className="text-gray-300 mt-0.5">›</span>
-                      <span>{m.starter}</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-gray-300 mt-0.5">›</span>
-                      <span>{m.main}</span>
-                    </li>
-                    {m.dessert && (
-                      <li className="flex items-start gap-2">
-                        <span className="text-gray-300 mt-0.5">›</span>
-                        <span>{m.dessert}</span>
-                      </li>
-                    )}
-                  </ul>
-                  {m.label === 'Fitt menü' && (
-                    <p className="mt-2 text-xs text-green-600 font-medium">🥗 Desszert nélkül</p>
-                  )}
-                </div>
-              ))}
+              <MenuCard menu={DAILY_MENU.menuA} />
+              <MenuCard menu={DAILY_MENU.menuB} />
+              <MenuCard menu={DAILY_MENU.menuFitt} />
             </div>
           </div>
 
@@ -177,7 +231,7 @@ export const Menu = () => {
             <SectionTitle>Főételek</SectionTitle>
             <div className="bg-white rounded-card shadow-card px-4">
               {DAILY_MENU.mains.map((item) => (
-                <MenuRow key={item.name} name={item.name} price={item.price} tags={item.tags} />
+                <MenuRow key={item.id} item={item} tags={item.tags} />
               ))}
             </div>
           </div>
@@ -187,7 +241,7 @@ export const Menu = () => {
             <SectionTitle>Desszert</SectionTitle>
             <div className="bg-white rounded-card shadow-card px-4">
               {DAILY_MENU.desserts.map((item) => (
-                <MenuRow key={item.name} name={item.name} price={item.price} />
+                <MenuRow key={item.id} item={item} />
               ))}
             </div>
           </div>
@@ -200,6 +254,39 @@ export const Menu = () => {
       </div>
 
       <BottomNav />
+
+      <style jsx>{`
+        @keyframes cart-bounce {
+          0%, 100% {
+            transform: scale(1);
+          }
+          25% {
+            transform: scale(1.3) rotate(5deg);
+          }
+          50% {
+            transform: scale(1.1) rotate(-5deg);
+          }
+          75% {
+            transform: scale(1.2) rotate(3deg);
+          }
+        }
+        @keyframes fade-out {
+          0% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-20px) scale(1.5);
+          }
+        }
+        .animate-cart-bounce {
+          animation: cart-bounce 0.6s ease-in-out;
+        }
+        .animate-fade-out {
+          animation: fade-out 0.6s ease-out forwards;
+        }
+      `}</style>
     </>
   );
 };
