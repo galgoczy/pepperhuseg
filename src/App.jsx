@@ -12,6 +12,7 @@ import { Rewards } from './pages/Rewards/Rewards';
 import { Promotions } from './pages/Promotions/Promotions';
 import { Feedback } from './pages/Feedback/Feedback';
 import { Profile } from './pages/Profile/Profile';
+import { Menu } from './pages/Menu/Menu';
 import { LoadingSpinner } from './components/common';
 
 // Protected Route wrapper
@@ -90,6 +91,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/menu"
+        element={
+          <ProtectedRoute>
+            <Menu />
           </ProtectedRoute>
         }
       />

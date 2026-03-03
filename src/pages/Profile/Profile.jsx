@@ -62,7 +62,7 @@ export const Profile = () => {
   return (
     <>
       <div className="min-h-screen bg-light-gray pb-20">
-        <Header title="Profil" />
+        <Header title="Profil" hideProfile />
 
         <div className="max-w-md mx-auto px-4 py-6 space-y-6">
           {/* Profile Header */}

@@ -1,7 +1,18 @@
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
-export const Header = ({ title, showBack = false, actions }) => {
+export const Header = ({ title, showBack = false, actions, hideProfile = false }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const profileButton = !hideProfile && (
+    <button
+      onClick={() => navigate('/profile')}
+      className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0"
+    >
+      {user?.name?.charAt(0) || 'U'}
+    </button>
+  );
 
   return (
     <header className="sticky top-0 bg-white border-b border-gray-200 safe-top z-30">
@@ -16,13 +27,13 @@ export const Header = ({ title, showBack = false, actions }) => {
             </svg>
           </button>
         ) : (
-          <div />
+          <div className="w-9" />
         )}
 
         <h1 className="text-lg font-bold text-secondary">{title}</h1>
 
         <div className="flex items-center gap-2">
-          {actions || <div className="w-10" />}
+          {actions || profileButton || <div className="w-9" />}
         </div>
       </div>
     </header>
